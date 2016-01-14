@@ -29,11 +29,9 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 /**
- * Title: HttpClientUtil.java<br>
- * Description: <br>
- * Copyright (c) ÈËºÍÍø°æÈ¨ËùÓĞ 2016    <br>
- * Create DateTime: 2016Äê1ÔÂ13ÈÕ ÏÂÎç3:54:32 <br>
+ * HttpClientå·¥å…·ç±»
  * @author HuangYao
+ *
  */
 public class HttpClientUtil {
 
@@ -47,10 +45,10 @@ public class HttpClientUtil {
 		HttpEntity entity = null;
 		String responseContent = null;
 		try {
-			// ´´½¨Ä¬ÈÏhttpClientÊµÀı
+			// è·å–é»˜è®¤httpClient
 			httpClient = HttpClients.createDefault();
 			httpRequest.setConfig(requestConfig);
-			// Ö´ĞĞÇëÇó
+			// æ‰§è¡Œ
 			response = httpClient.execute(httpRequest);
 			entity = response.getEntity();
 			responseContent = EntityUtils.toString(entity, DEFAULT_CHARSET);
@@ -58,7 +56,7 @@ public class HttpClientUtil {
 			e.printStackTrace();
 		} finally {
 			try {
-				// ¹Ø±ÕÁ¬½Ó£¬ÊÍ·Å×ÊÔ´
+				// å…³é—­è¿æ¥
 				if (response != null) {
 					response.close();
 				}
@@ -82,7 +80,7 @@ public class HttpClientUtil {
 			DefaultHostnameVerifier hostnameVerifier = new DefaultHostnameVerifier(publicSuffixMatcher);
 			httpClient = HttpClients.custom().setSSLHostnameVerifier(hostnameVerifier).build();
 			httpRequest.setConfig(requestConfig);
-			// Ö´ĞĞÇëÇó
+			// æ‰§è¡Œ
 			response = httpClient.execute(httpRequest);
 			entity = response.getEntity();
 			responseContent = EntityUtils.toString(entity, DEFAULT_CHARSET);
@@ -90,7 +88,7 @@ public class HttpClientUtil {
 			e.printStackTrace();
 		} finally {
 			try {
-				// ¹Ø±ÕÁ¬½Ó£¬ÊÍ·Å×ÊÔ´
+				// å…³é—­è¿æ¥
 				if (response != null) {
 					response.close();
 				}
@@ -112,7 +110,6 @@ public class HttpClientUtil {
 	public static String sendHttpPost(String httpUrl, String params) {
 		HttpPost httpPost = new HttpPost(httpUrl);
 		try {
-			// ÉèÖÃ²ÎÊı
 			StringEntity stringEntity = new StringEntity(params, DEFAULT_CHARSET);
 			stringEntity.setContentType(DEFAULT_POST_CONTENT_TYPE);
 			httpPost.setEntity(stringEntity);
@@ -124,7 +121,6 @@ public class HttpClientUtil {
 
 	public static String sendHttpPost(String httpUrl, Map<String, String> maps) {
 		HttpPost httpPost = new HttpPost(httpUrl);
-		// ´´½¨²ÎÊı¶ÓÁĞ
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 		for (String key : maps.keySet()) {
 			nameValuePairs.add(new BasicNameValuePair(key, maps.get(key)));
