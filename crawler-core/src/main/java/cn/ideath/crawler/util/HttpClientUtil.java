@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -28,6 +29,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+import cn.ideath.crawler.bean.vo.HttpResponseData;
+
 /**
  * HttpClient工具类
  * @author HuangYao
@@ -39,11 +42,11 @@ public class HttpClientUtil {
 	private static final String DEFAULT_POST_CONTENT_TYPE = "application/x-www-form-urlencoded";
 	private static final String DEFAULT_CHARSET = "UTF-8";
 
-	public static String sendHttpRequest(HttpRequestBase httpRequest) {
+	public static HttpResponseData getDataBySendHttpRequest(HttpRequestBase httpRequest) {
+		HttpResponseData data = new HttpResponseData();
 		CloseableHttpClient httpClient = null;
 		CloseableHttpResponse response = null;
 		HttpEntity entity = null;
-		String responseContent = null;
 		try {
 			// 获取默认httpClient
 			httpClient = HttpClients.createDefault();
@@ -51,8 +54,12 @@ public class HttpClientUtil {
 			// 执行
 			response = httpClient.execute(httpRequest);
 			entity = response.getEntity();
-			responseContent = EntityUtils.toString(entity, DEFAULT_CHARSET);
+			data.setStatusCode(response.getStatusLine().getStatusCode());
+			data.setMimeType(ContentType.getOrDefault(entity).getMimeType());
+			data.setBody(EntityUtils.toString(entity, DEFAULT_CHARSET));
+			data.setHeaders(response.getHeaders(HttpHeaders.CONTENT_TYPE));
 		} catch (Exception e) {
+			data = null;
 			e.printStackTrace();
 		} finally {
 			try {
@@ -67,14 +74,14 @@ public class HttpClientUtil {
 				e.printStackTrace();
 			}
 		}
-		return responseContent;
+		return data;
 	}
 
-	public static String sendHttpsRequest(HttpRequestBase httpRequest) {
+	public static HttpResponseData getDataBySendHttpsRequest(HttpRequestBase httpRequest) {
+		HttpResponseData data = new HttpResponseData();
 		CloseableHttpClient httpClient = null;
 		CloseableHttpResponse response = null;
 		HttpEntity entity = null;
-		String responseContent = null;
 		try {
 			PublicSuffixMatcher publicSuffixMatcher = PublicSuffixMatcherLoader.load(new URL(httpRequest.getURI().toString()));
 			DefaultHostnameVerifier hostnameVerifier = new DefaultHostnameVerifier(publicSuffixMatcher);
@@ -83,8 +90,12 @@ public class HttpClientUtil {
 			// 执行
 			response = httpClient.execute(httpRequest);
 			entity = response.getEntity();
-			responseContent = EntityUtils.toString(entity, DEFAULT_CHARSET);
+			data.setStatusCode(response.getStatusLine().getStatusCode());
+			data.setMimeType(ContentType.getOrDefault(entity).getMimeType());
+			data.setBody(EntityUtils.toString(entity, DEFAULT_CHARSET));
+			data.setHeaders(response.getHeaders(HttpHeaders.CONTENT_TYPE));
 		} catch (Exception e) {
+			data = null;
 			e.printStackTrace();
 		} finally {
 			try {
@@ -99,15 +110,15 @@ public class HttpClientUtil {
 				e.printStackTrace();
 			}
 		}
-		return responseContent;
+		return data;
 	}
 
-	public static String sendHttpPost(String httpUrl) {
+	public static HttpResponseData getDataBySendHttpPostRequest(String httpUrl) {
 		HttpPost httpPost = new HttpPost(httpUrl);
-		return sendHttpRequest(httpPost);
+		return getDataBySendHttpRequest(httpPost);
 	}
 
-	public static String sendHttpPost(String httpUrl, String params) {
+	public static HttpResponseData getDataBySendHttpPostRequest(String httpUrl, String params) {
 		HttpPost httpPost = new HttpPost(httpUrl);
 		try {
 			StringEntity stringEntity = new StringEntity(params, DEFAULT_CHARSET);
@@ -116,10 +127,10 @@ public class HttpClientUtil {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return sendHttpRequest(httpPost);
+		return getDataBySendHttpRequest(httpPost);
 	}
 
-	public static String sendHttpPost(String httpUrl, Map<String, String> maps) {
+	public static HttpResponseData getDataBySendHttpPostRequest(String httpUrl, Map<String, String> maps) {
 		HttpPost httpPost = new HttpPost(httpUrl);
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 		for (String key : maps.keySet()) {
@@ -130,10 +141,10 @@ public class HttpClientUtil {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return sendHttpRequest(httpPost);
+		return getDataBySendHttpRequest(httpPost);
 	}
 
-	public static String sendHttpPost(String httpUrl, Map<String, String> maps, List<File> fileLists) {
+	public static HttpResponseData getDataBySendHttpPostRequest(String httpUrl, Map<String, String> maps, List<File> fileLists) {
 		HttpPost httpPost = new HttpPost(httpUrl);
 		MultipartEntityBuilder meBuilder = MultipartEntityBuilder.create();
 		for (String key : maps.keySet()) {
@@ -144,17 +155,17 @@ public class HttpClientUtil {
 			meBuilder.addPart("files", fileBody);
 		}
 		httpPost.setEntity(meBuilder.build());
-		return sendHttpRequest(httpPost);
+		return getDataBySendHttpRequest(httpPost);
 	}
 
-	public static String sendHttpGet(String httpUrl) {
+	public static HttpResponseData getDataBySendHttpGetRequest(String httpUrl) {
 		HttpGet httpGet = new HttpGet(httpUrl);
-		return sendHttpRequest(httpGet);
+		return getDataBySendHttpRequest(httpGet);
 	}
 
-	public static String sendHttpsGet(String httpUrl) {
+	public static HttpResponseData getDataBySendHttpsGetRequest(String httpUrl) {
 		HttpGet httpGet = new HttpGet(httpUrl);
-		return sendHttpsRequest(httpGet);
+		return getDataBySendHttpsRequest(httpGet);
 	}
 
 }
