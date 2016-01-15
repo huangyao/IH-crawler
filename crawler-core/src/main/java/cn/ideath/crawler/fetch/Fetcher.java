@@ -8,7 +8,7 @@ import cn.ideath.crawler.bean.ResponseData;
  * @author HuangYao
  *
  */
-public interface Fetcher {
+public interface Fetcher<Req extends RequestData, Res extends ResponseData> {
 
-	ResponseData fetch(RequestData request);
+	Res fetch(Req request);
 }
