@@ -1,5 +1,7 @@
 package cn.ideath.crawler.bean.vo;
 
+import java.net.URI;
+
 import org.apache.http.Header;
 
 import cn.ideath.crawler.bean.ResponseData;
@@ -17,6 +19,7 @@ public class HttpResponseData implements ResponseData {
 	private String mimeType;
 	private Header[] headers;
 	private String body;
+	private URI requestURI;
 
 	public int getStatusCode() {
 		return statusCode;
@@ -48,6 +51,14 @@ public class HttpResponseData implements ResponseData {
 
 	public void setBody(String body) {
 		this.body = body;
+	}
+
+	public URI getRequestURI() {
+		return requestURI;
+	}
+
+	public void setRequestURI(URI requestURI) {
+		this.requestURI = requestURI;
 	}
 
 }
