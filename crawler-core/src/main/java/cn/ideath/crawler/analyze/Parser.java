@@ -7,7 +7,7 @@ import cn.ideath.crawler.bean.SourceData;
  * @author HuangYao
  *
  */
-public interface Parser {
+public interface Parser<T> {
 
-	void parse(SourceData src);
+	T parse(SourceData src);
 }
