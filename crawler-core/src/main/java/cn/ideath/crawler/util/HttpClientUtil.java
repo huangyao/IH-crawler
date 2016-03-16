@@ -43,13 +43,14 @@ public class HttpClientUtil {
 	private static final String DEFAULT_CHARSET = "UTF-8";
 
 	public static HttpResponseData getDataBySendHttpRequest(HttpRequestBase httpRequest) {
+		;
 		HttpResponseData data = new HttpResponseData();
 		CloseableHttpClient httpClient = null;
 		CloseableHttpResponse response = null;
 		HttpEntity entity = null;
 		try {
 			// 获取默认httpClient
-			httpClient = HttpClients.createDefault();
+			httpClient = HttpClients.custom().build();
 			httpRequest.setConfig(requestConfig);
 			// 执行
 			response = httpClient.execute(httpRequest);
@@ -61,7 +62,7 @@ public class HttpClientUtil {
 			data.setRequestURI(httpRequest.getURI());
 		} catch (Exception e) {
 			data = null;
-			e.printStackTrace();
+//			e.printStackTrace();
 		} finally {
 			try {
 				// 关闭连接
@@ -146,6 +147,21 @@ public class HttpClientUtil {
 		return getDataBySendHttpRequest(httpPost);
 	}
 
+	public static HttpResponseData getDataBySendHttpPostRequest(String httpUrl, Map<String, String> maps, String cookie) {
+		HttpPost httpPost = new HttpPost(httpUrl);
+		httpPost.setHeader("Cookie", cookie);
+		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+		for (String key : maps.keySet()) {
+			nameValuePairs.add(new BasicNameValuePair(key, maps.get(key)));
+		}
+		try {
+			httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs, DEFAULT_CHARSET));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return getDataBySendHttpRequest(httpPost);
+	}
+
 	public static HttpResponseData getDataBySendHttpPostRequest(String httpUrl, Map<String, String> maps, List<File> fileLists) {
 		HttpPost httpPost = new HttpPost(httpUrl);
 		MultipartEntityBuilder meBuilder = MultipartEntityBuilder.create();
@@ -162,6 +178,12 @@ public class HttpClientUtil {
 
 	public static HttpResponseData getDataBySendHttpGetRequest(String httpUrl) {
 		HttpGet httpGet = new HttpGet(httpUrl);
+		return getDataBySendHttpRequest(httpGet);
+	}
+
+	public static HttpResponseData getDataBySendHttpGetRequest(String httpUrl, String cookie) {
+		HttpGet httpGet = new HttpGet(httpUrl);
+		httpGet.setHeader("Cookie", cookie);
 		return getDataBySendHttpRequest(httpGet);
 	}
 

@@ -44,15 +44,16 @@ public abstract class AbstractCrawler<Req extends RequestData, Res extends Respo
 	}
 
 	public void run() {
-		try {
-			while (!stop) {
+
+		while (!stop) {
+			try {
 				beforeProcess();
 				Res response = fetcher.fetch(createRequest());
 				process(response);
 				afterProcess();
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 }
