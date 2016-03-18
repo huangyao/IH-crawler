@@ -2,6 +2,8 @@ package cn.ideath.crawler.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +11,7 @@ import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
+import org.apache.http.HttpHost;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -29,6 +32,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+import cn.ideath.crawler.bean.vo.HttpProxyData;
+import cn.ideath.crawler.bean.vo.HttpRequestData;
 import cn.ideath.crawler.bean.vo.HttpResponseData;
 
 /**
@@ -43,7 +48,6 @@ public class HttpClientUtil {
 	private static final String DEFAULT_CHARSET = "UTF-8";
 
 	public static HttpResponseData getDataBySendHttpRequest(HttpRequestBase httpRequest) {
-		;
 		HttpResponseData data = new HttpResponseData();
 		CloseableHttpClient httpClient = null;
 		CloseableHttpResponse response = null;
@@ -62,7 +66,7 @@ public class HttpClientUtil {
 			data.setRequestURI(httpRequest.getURI());
 		} catch (Exception e) {
 			data = null;
-//			e.printStackTrace();
+			//			e.printStackTrace();
 		} finally {
 			try {
 				// 关闭连接
@@ -184,6 +188,7 @@ public class HttpClientUtil {
 	public static HttpResponseData getDataBySendHttpGetRequest(String httpUrl, String cookie) {
 		HttpGet httpGet = new HttpGet(httpUrl);
 		httpGet.setHeader("Cookie", cookie);
+		httpGet.setHeader("Accept-Language", "zh-CN");
 		return getDataBySendHttpRequest(httpGet);
 	}
 
@@ -192,4 +197,55 @@ public class HttpClientUtil {
 		return getDataBySendHttpsRequest(httpGet);
 	}
 
+	public static HttpResponseData getDataBySendHttpGetRequestViaProxy(URI uri,HttpProxyData proxyData) {
+		HttpResponseData data = new HttpResponseData();
+		CloseableHttpClient httpClient = null;
+		CloseableHttpResponse response = null;
+		HttpEntity entity = null;
+		try {
+			// 获取默认httpClient
+			httpClient = HttpClients.custom().build();
+
+			HttpHost target = new HttpHost(uri.getHost(), 80, "http");
+			HttpHost proxy = new HttpHost(proxyData.getHost(), proxyData.getPort(), "http");
+
+			RequestConfig config = RequestConfig.custom().setSocketTimeout(15000).setConnectTimeout(15000).setConnectionRequestTimeout(15000).setProxy(proxy).build();
+
+			HttpGet httpRequest = new HttpGet(uri.getPath() + "?" + uri.getQuery());
+			httpRequest.setConfig(config);
+			// 执行
+			response = httpClient.execute(target, httpRequest);
+			entity = response.getEntity();
+			data.setStatusCode(response.getStatusLine().getStatusCode());
+			data.setMimeType(ContentType.getOrDefault(entity).getMimeType());
+			data.setBody(EntityUtils.toString(entity, DEFAULT_CHARSET));
+			data.setHeaders(response.getHeaders(HttpHeaders.CONTENT_TYPE));
+			data.setRequestURI(httpRequest.getURI());
+		} catch (Exception e) {
+			data = null;
+			//			e.printStackTrace();
+		} finally {
+			try {
+				// 关闭连接
+				if (response != null) {
+					response.close();
+				}
+				if (httpClient != null) {
+					httpClient.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return data;
+	}
+
+	public static void main(String[] args) throws URISyntaxException {
+		HttpGet httpGet = new HttpGet("http://www.igxe.cn/category-1?a=b");
+		URI uri = new URI("http://www.igxe.cn/category-1?a=b");
+		System.out.println(uri.getHost());
+		System.out.println(uri.getPath() + "?" + uri.getQuery());
+		System.out.println(uri.getScheme());
+		System.out.println(uri.getPort());
+	}
 }

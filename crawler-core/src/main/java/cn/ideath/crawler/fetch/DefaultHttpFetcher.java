@@ -16,7 +16,11 @@ public class DefaultHttpFetcher implements Fetcher<HttpRequestData, HttpResponse
 		HttpResponseData response = null;
 		String method = request.getMethod();
 		if (HttpConstants.METHOD_GET.equals(method)) {
-			response = HttpClientUtil.getDataBySendHttpGetRequest(request.getUrl());
+			if(request.getProxy()==null){
+				response = HttpClientUtil.getDataBySendHttpGetRequest(request.getUrl());
+			}else{
+				response = HttpClientUtil.getDataBySendHttpGetRequestViaProxy(request.getUri(),request.getProxy());				
+			}
 		} else if (HttpConstants.METHOD_POST.equals(method)) {
 			if (request.getNameValueMap() != null) {
 				response = HttpClientUtil.getDataBySendHttpPostRequest(request.getUrl(), request.getNameValueMap());
