@@ -52,7 +52,8 @@ public abstract class AbstractCrawler<Req extends RequestData, Res extends Respo
 				process(response);
 				afterProcess();
 			} catch (Exception e) {
-				e.printStackTrace();
+//				e.printStackTrace();
+				System.out.println("执行期间发生异常...");
 			}
 		}
 	}

@@ -66,4 +66,9 @@ public interface HttpConstants {
 	public static final String METHOD_GET = "GET";
 	public static final String METHOD_POST = "POST";
 	// ------ METHOD ------ end
+	
+	// ------ PROTOCOL ------ start
+	public static final String PROTOCOL_HTTP = "http";
+	public static final String PROTOCOL_HTTPS = "https";
+	// ------ PROTOCOL ------ end
 }

@@ -1,5 +1,6 @@
 package cn.ideath.crawler.bean.vo;
 
+import java.net.URI;
 import java.util.Map;
 
 import cn.ideath.crawler.bean.RequestData;
@@ -14,12 +15,16 @@ public class HttpRequestData implements RequestData {
 
 	/** 请求地址 */
 	private String url;
+	/** 请求的URI */
+	private URI uri;
 	/** 请求方法 */
 	private String method;
 	/** 参数 */
 	private String params;
 	/** 参数键值对 */
 	private Map<String, String> nameValueMap;
+	/** 代理 */
+	private HttpProxyData proxy;
 
 	private static final String DEFAULT_METHOD = HttpConstants.METHOD_GET;
 
@@ -37,6 +42,14 @@ public class HttpRequestData implements RequestData {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public URI getUri() {
+		return uri;
+	}
+
+	public void setUri(URI uri) {
+		this.uri = uri;
 	}
 
 	public String getMethod() {
@@ -63,4 +76,12 @@ public class HttpRequestData implements RequestData {
 		this.nameValueMap = nameValueMap;
 	}
 
+	public HttpProxyData getProxy() {
+		return proxy;
+	}
+
+	public void setProxy(HttpProxyData proxy) {
+		this.proxy = proxy;
+	}
+	
 }
