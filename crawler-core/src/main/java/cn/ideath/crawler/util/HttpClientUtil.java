@@ -3,17 +3,18 @@ package cn.ideath.crawler.util;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.config.RequestConfig.Builder;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -33,7 +34,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import cn.ideath.crawler.bean.vo.HttpProxyData;
-import cn.ideath.crawler.bean.vo.HttpRequestData;
 import cn.ideath.crawler.bean.vo.HttpResponseData;
 
 /**
@@ -197,7 +197,7 @@ public class HttpClientUtil {
 		return getDataBySendHttpsRequest(httpGet);
 	}
 
-	public static HttpResponseData getDataBySendHttpGetRequestViaProxy(URI uri,HttpProxyData proxyData) {
+	public static HttpResponseData getDataBySendHttpGetRequestViaProxy(URI uri, HttpProxyData proxyData) {
 		HttpResponseData data = new HttpResponseData();
 		CloseableHttpClient httpClient = null;
 		CloseableHttpResponse response = null;
@@ -212,6 +212,60 @@ public class HttpClientUtil {
 			RequestConfig config = RequestConfig.custom().setSocketTimeout(15000).setConnectTimeout(15000).setConnectionRequestTimeout(15000).setProxy(proxy).build();
 
 			HttpGet httpRequest = new HttpGet(uri.getPath() + "?" + uri.getQuery());
+			httpRequest.setConfig(config);
+			httpRequest.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36");
+			// 执行
+			response = httpClient.execute(target, httpRequest);
+			entity = response.getEntity();
+			data.setStatusCode(response.getStatusLine().getStatusCode());
+			data.setMimeType(ContentType.getOrDefault(entity).getMimeType());
+			data.setBody(EntityUtils.toString(entity, DEFAULT_CHARSET));
+			data.setHeaders(response.getHeaders(HttpHeaders.CONTENT_TYPE));
+			data.setRequestURI(httpRequest.getURI());
+		} catch (Exception e) {
+			data = null;
+			//			e.printStackTrace();
+		} finally {
+			try {
+				// 关闭连接
+				if (response != null) {
+					response.close();
+				}
+				if (httpClient != null) {
+					httpClient.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return data;
+	}
+
+	public static HttpResponseData getDataBySendHttpGetRequest(URI uri, Map<String, String> headers, HttpProxyData proxyData) {
+		HttpResponseData data = new HttpResponseData();
+		CloseableHttpClient httpClient = null;
+		CloseableHttpResponse response = null;
+		HttpEntity entity = null;
+		try {
+			// 获取默认httpClient
+			httpClient = HttpClients.custom().build();
+
+			HttpHost target = new HttpHost(uri.getHost(), 80, "http");
+			Builder configBuilder = RequestConfig.custom().setSocketTimeout(15000).setConnectTimeout(15000).setConnectionRequestTimeout(15000);
+			if (proxyData != null) {
+				HttpHost proxy = new HttpHost(proxyData.getHost(), proxyData.getPort(), "http");
+				configBuilder.setProxy(proxy);
+			}
+
+			RequestConfig config = configBuilder.build();
+
+			HttpGet httpRequest = new HttpGet(uri.getPath() + "?" + uri.getQuery());
+			if (headers != null) {
+				Set<String> headNames = headers.keySet();
+				for (String headName : headNames) {
+					httpRequest.setHeader(headName, headers.get(headName));
+				}
+			}
 			httpRequest.setConfig(config);
 			// 执行
 			response = httpClient.execute(target, httpRequest);
@@ -240,12 +294,4 @@ public class HttpClientUtil {
 		return data;
 	}
 
-	public static void main(String[] args) throws URISyntaxException {
-		HttpGet httpGet = new HttpGet("http://www.igxe.cn/category-1?a=b");
-		URI uri = new URI("http://www.igxe.cn/category-1?a=b");
-		System.out.println(uri.getHost());
-		System.out.println(uri.getPath() + "?" + uri.getQuery());
-		System.out.println(uri.getScheme());
-		System.out.println(uri.getPort());
-	}
 }
