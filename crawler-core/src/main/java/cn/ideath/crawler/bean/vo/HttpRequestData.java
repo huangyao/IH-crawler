@@ -1,6 +1,7 @@
 package cn.ideath.crawler.bean.vo;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 import cn.ideath.crawler.bean.RequestData;
@@ -25,6 +26,8 @@ public class HttpRequestData implements RequestData {
 	private Map<String, String> nameValueMap;
 	/** 代理 */
 	private HttpProxyData proxy;
+	/** headers */
+	private Map<String, String> headers;
 
 	private static final String DEFAULT_METHOD = HttpConstants.METHOD_GET;
 
@@ -42,6 +45,12 @@ public class HttpRequestData implements RequestData {
 
 	public void setUrl(String url) {
 		this.url = url;
+		try {
+			uri = new URI(url);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public URI getUri() {
@@ -83,5 +92,13 @@ public class HttpRequestData implements RequestData {
 	public void setProxy(HttpProxyData proxy) {
 		this.proxy = proxy;
 	}
-	
+
+	public Map<String, String> getHeaders() {
+		return headers;
+	}
+
+	public void setHeaders(Map<String, String> headers) {
+		this.headers = headers;
+	}
+
 }
