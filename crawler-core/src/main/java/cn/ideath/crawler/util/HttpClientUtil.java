@@ -62,7 +62,7 @@ public class HttpClientUtil {
 			data.setStatusCode(response.getStatusLine().getStatusCode());
 			data.setMimeType(ContentType.getOrDefault(entity).getMimeType());
 			data.setBody(EntityUtils.toString(entity, DEFAULT_CHARSET));
-			data.setHeaders(response.getHeaders(HttpHeaders.CONTENT_TYPE));
+			data.setHeaders(response.getAllHeaders());
 			data.setRequestURI(httpRequest.getURI());
 		} catch (Exception e) {
 			data = null;
@@ -99,7 +99,7 @@ public class HttpClientUtil {
 			data.setStatusCode(response.getStatusLine().getStatusCode());
 			data.setMimeType(ContentType.getOrDefault(entity).getMimeType());
 			data.setBody(EntityUtils.toString(entity, DEFAULT_CHARSET));
-			data.setHeaders(response.getHeaders(HttpHeaders.CONTENT_TYPE));
+			data.setHeaders(response.getAllHeaders());
 			data.setRequestURI(httpRequest.getURI());
 		} catch (Exception e) {
 			data = null;
@@ -220,7 +220,7 @@ public class HttpClientUtil {
 			data.setStatusCode(response.getStatusLine().getStatusCode());
 			data.setMimeType(ContentType.getOrDefault(entity).getMimeType());
 			data.setBody(EntityUtils.toString(entity, DEFAULT_CHARSET));
-			data.setHeaders(response.getHeaders(HttpHeaders.CONTENT_TYPE));
+			data.setHeaders(response.getAllHeaders());
 			data.setRequestURI(httpRequest.getURI());
 		} catch (Exception e) {
 			data = null;
@@ -273,7 +273,7 @@ public class HttpClientUtil {
 			data.setStatusCode(response.getStatusLine().getStatusCode());
 			data.setMimeType(ContentType.getOrDefault(entity).getMimeType());
 			data.setBody(EntityUtils.toString(entity, DEFAULT_CHARSET));
-			data.setHeaders(response.getHeaders(HttpHeaders.CONTENT_TYPE));
+			data.setHeaders(response.getAllHeaders());
 			data.setRequestURI(httpRequest.getURI());
 		} catch (Exception e) {
 			data = null;
